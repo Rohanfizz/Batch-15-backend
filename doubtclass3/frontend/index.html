@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Beautiful Form</title>
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <div class="form-container">
+            <h1>Beautiful Form</h1>
+            <form method="post">
+                <div class="input-group">
+                    <label for="name">Name:</label>
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        placeholder="Enter your name"
+                    />
+                </div>
+                <div class="input-group">
+                    <label for="email">Email:</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Enter your email address"
+                    />
+                </div>
+                <div class="input-group">
+                    <label for="phone">Phone:</label>
+                    <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        placeholder="Enter your phone number"
+                    />
+                </div>
+                <div class="input-group">
+                    <label for="password">Password:</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Enter your password"
+                    />
+                </div>
+                <div class="button-group">
+                    <button type="button" onclick="onSubmitForm()">
+                        Submit
+                    </button>
+                    <button type="reset">Reset</button>
+                </div>
+            </form>
+        </div>
+        <script src="script.js"></script>
+        <!-- Include your JavaScript file here -->
+    </body>
+</html>
