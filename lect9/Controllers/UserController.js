@@ -7,7 +7,7 @@ function signJWT(userId) {
     return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
         expiresIn: "90d",
     });
-}
+}   
 
 exports.authorize = CatchAsync(async function (req, res, next) {
     let token;
@@ -25,6 +25,16 @@ exports.authorize = CatchAsync(async function (req, res, next) {
         token,
         process.env.JWT_SECRET
     );
+    // User might have changed their password after this token was issued.
+    // We validating if the token was issued after password was changed-    
+    const currentUser = await UserModel.findById(decoded.id).select(
+        "+passwordChangedAt"
+    );
+    if (currentUser.changedPasswordAfter(decoded.iat)) {
+        return next(
+            new AppError("Password has been changed. Please login again!", 401)
+        );
+    }
     req.userId = decoded.id;
     next();
 });
@@ -78,4 +88,11 @@ exports.getUserDetailsController = CatchAsync(async function (req, res, next) {
         status: "success",
         user,
     });
+});
+
+exports.updatePasswordController = CatchAsync(async function (req, res, next) {
+    const currentUser = await UserModel.findByIdAndUpdate(req.userId, {
+        passwordChangedAt: Date.now(),
+    });
+    res.status(200);
 });
