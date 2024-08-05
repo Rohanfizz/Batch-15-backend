@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const emailValidator = require("email-validator");
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 const UserSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
@@ -53,6 +54,8 @@ const UserSchema = new mongoose.Schema({
         default: Date.now(),
         select: false,
     },
+    passwordResetToken: String,
+    passwordResetExpires: Date,
 });
 
 UserSchema.pre("save", async function (next) {
@@ -65,11 +68,23 @@ UserSchema.pre("save", async function (next) {
     this.passwordConfirm = undefined;
 });
 
-
 UserSchema.methods.changedPasswordAfter = function (JWTIssuedAt) {
     const timeStampInMiliSeconds = this.passwordChangedAt.getTime();
     const changedTimestamp = parseInt(timeStampInMiliSeconds / 1000, 10);
     return JWTIssuedAt < changedTimestamp;
+};
+
+UserSchema.methods.createPasswordResetToken = async function () {
+    // This function does the following
+    //1. generates password reset token
+    //2. Stores the hashed form of this in the DB
+    //3. Returns raw token in response
+    const resetToken = crypto.randomBytes(32).toString("hex"); // generate token
+
+    this.passwordResetToken = await bcrypt.hash(resetToken, 12);
+    this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 min
+
+    return resetToken;
 };
 
 // Instance methods
